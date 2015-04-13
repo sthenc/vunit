@@ -14,6 +14,7 @@ from vunit.modelsim_interface import ModelSimInterface
 from vunit.activehdl_interface import ActiveHDLInterface
 from vunit.rivierapro_interface import RivieraProInterface
 from vunit.ghdl_interface import GHDLInterface
+from vunit.nvc_interface import NvcInterface
 from vunit.incisive_interface import IncisiveInterface
 from vunit.simulator_interface import (BooleanOption,
                                        ListOfStringOption,
@@ -34,7 +35,8 @@ class SimulatorFactory(object):
                 RivieraProInterface,
                 ActiveHDLInterface,
                 GHDLInterface,
-                IncisiveInterface]
+                IncisiveInterface,
+                NvcInterface]
 
     def _extract_compile_options(self):
         """
