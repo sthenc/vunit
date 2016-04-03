@@ -25,6 +25,7 @@ package integer_vector_ptr_pkg is
 end package;
 
 package body integer_vector_ptr_pkg is
+  type integer_vector is array (natural range <>) of integer;
   type integer_vector_access_t is access integer_vector;
   type integer_vector_access_vector_t is array (natural range <>) of integer_vector_access_t;
   type integer_vector_access_vector_access_t is access integer_vector_access_vector_t;
