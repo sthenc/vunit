@@ -63,6 +63,8 @@ package integer_array_pkg is
   procedure deallocate(variable arr : inout integer_array_t);
   impure function is_null(arr : integer_array_t) return boolean;
 
+  impure function bytes_per_word(arr : integer_array_t) return integer;
+
   impure function get(arr : integer_array_t; idx : integer) return integer;
   impure function get(arr : integer_array_t; x,y : integer) return integer;
   impure function get(arr : integer_array_t; x,y,z : integer) return integer;
