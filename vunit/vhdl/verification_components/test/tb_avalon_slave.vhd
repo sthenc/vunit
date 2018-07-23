@@ -36,6 +36,7 @@ architecture a of tb_avalon_slave is
   begin
     return (data_width          => positive'value(get(encoded_tb_cfg, "data_width", "32")),
             address_width       => positive'value(get(encoded_tb_cfg, "address_width", "32")),
+            burstcount_width    => positive'value(get(encoded_tb_cfg, "burstcount_width", "1")),
             num_cycles          => positive'value(get(encoded_tb_cfg, "num_cycles", "64")),
             readdatavalid_prob  => real'value(get(encoded_tb_cfg, "readdatavalid_prob", "0.5")),
             waitrequest_prob    => real'value(get(encoded_tb_cfg, "waitrequest_prob", "0.5")));
@@ -85,6 +86,9 @@ begin
 
 
     if run("wr block rd block") then
+      
+      burstcount <= ( 0 => '1', others => '0');
+      
       info(tb_logger, "Writing...");
       for i in 0 to tb_cfg.num_cycles-1 loop
         write <= '1';
