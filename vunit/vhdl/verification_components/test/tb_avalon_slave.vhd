@@ -16,44 +16,47 @@ use work.avalon_pkg.all;
 
 entity tb_avalon_slave is
   generic (
-    runner_cfg : string;
-    encoded_tb_cfg : string
+    runner_cfg      : string;
+    encoded_tb_cfg  : string
   );
 end entity;
 
 architecture a of tb_avalon_slave is
 
   type tb_cfg_t is record
-    data_width : positive;
-    address_width : positive;
-    num_cycles : positive;
-    readdatavalid_prob : real;
-    waitrequest_prob : real;
+    data_width          : positive;
+    address_width       : positive;
+    burstcount_width    : positive; 
+    num_cycles          : positive;
+    readdatavalid_prob  : real;
+    waitrequest_prob    : real;
   end record tb_cfg_t;
 
   impure function decode(encoded_tb_cfg : string) return tb_cfg_t is
   begin
-    return (data_width => positive'value(get(encoded_tb_cfg, "data_width", "32")),
-            address_width => positive'value(get(encoded_tb_cfg, "address_width", "32")),
-            num_cycles => positive'value(get(encoded_tb_cfg, "num_cycles", "64")),
-            readdatavalid_prob => real'value(get(encoded_tb_cfg, "readdatavalid_prob", "0.5")),
-            waitrequest_prob => real'value(get(encoded_tb_cfg, "waitrequest_prob", "0.5")));
+    return (data_width          => positive'value(get(encoded_tb_cfg, "data_width", "32")),
+            address_width       => positive'value(get(encoded_tb_cfg, "address_width", "32")),
+            num_cycles          => positive'value(get(encoded_tb_cfg, "num_cycles", "64")),
+            readdatavalid_prob  => real'value(get(encoded_tb_cfg, "readdatavalid_prob", "0.5")),
+            waitrequest_prob    => real'value(get(encoded_tb_cfg, "waitrequest_prob", "0.5")));
   end function decode;
 
   constant tb_cfg : tb_cfg_t := decode(encoded_tb_cfg);
 
-  signal clk    : std_logic := '0';
-  signal address    : std_logic_vector(tb_cfg.address_width-1 downto 0) := (others => '0');
-  signal writedata  : std_logic_vector(tb_cfg.data_width-1 downto 0) := (others => '0');
-  signal readdata  : std_logic_vector(tb_cfg.data_width-1 downto 0) := (others => '0');
-  signal byteenable : std_logic_vector(tb_cfg.data_width/8 -1 downto 0) := (others => '1');
-  signal write   : std_logic := '0';
-  signal read  : std_logic := '0';
+  signal clk            : std_logic := '0';
+  signal address        : std_logic_vector(tb_cfg.address_width-1 downto 0) := (others => '0');
+  signal writedata      : std_logic_vector(tb_cfg.data_width-1 downto 0) := (others => '0');
+  signal readdata       : std_logic_vector(tb_cfg.data_width-1 downto 0) := (others => '0');
+  signal byteenable     : std_logic_vector(tb_cfg.data_width/8 -1 downto 0) := (others => '1');
+  signal burstcount     : std_logic_vector(tb_cfg.burstcount_width-1 downto 0) := (others => '0');
+  
+  signal write          : std_logic := '0';
+  signal read           : std_logic := '0';
   signal waitrequest    : std_logic := '0';
-  signal readdatavalid : std_logic := '0';
+  signal readdatavalid  : std_logic := '0';
 
 
-  constant tb_logger : logger_t := get_logger("tb");
+  constant tb_logger    : logger_t := get_logger("tb");
 
   signal wr_ack_cnt    : natural range 0 to tb_cfg.num_cycles;
   signal rd_ack_cnt    : natural range 0 to tb_cfg.num_cycles;
@@ -61,11 +64,12 @@ architecture a of tb_avalon_slave is
   constant memory : memory_t := new_memory;
   constant buf : buffer_t := allocate(memory, tb_cfg.num_cycles * byteenable'length);
   constant avalon_slave : avalon_slave_t :=
-      new_avalon_slave(memory => memory,
-        name => "avmm_vc",
-        readdatavalid_high_probability => tb_cfg.readdatavalid_prob,
-        waitrequest_high_probability => tb_cfg.waitrequest_prob
-      );
+    new_avalon_slave(
+      memory                          => memory,
+      name                            => "avmm_vc",
+      readdatavalid_high_probability  => tb_cfg.readdatavalid_prob,
+      waitrequest_high_probability    => tb_cfg.waitrequest_prob
+    );
 begin
 
   main_stim : process
@@ -122,16 +126,16 @@ begin
       avalon_slave => avalon_slave
     )
     port map (
-      clk   => clk,
-      address   => address,
-      byteenable => byteenable,
-      burstcount => "1",
-      write => write,
-      writedata => writedata,
-      read => read,
-      readdata => readdata,
+      clk           => clk,
+      address       => address,
+      byteenable    => byteenable,
+      burstcount    => burstcount,
+      write         => write,
+      writedata     => writedata,
+      read          => read,
+      readdata      => readdata,
       readdatavalid => readdatavalid,
-      waitrequest => waitrequest
+      waitrequest   => waitrequest
     );
 
   clk <= not clk after 5 ns;
