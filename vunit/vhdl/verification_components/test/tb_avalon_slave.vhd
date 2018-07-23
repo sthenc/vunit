@@ -110,6 +110,10 @@ begin
 
       wait until rising_edge(clk) and rd_ack_cnt = tb_cfg.num_cycles-1;
     end if;
+    
+    if run("wr burst rd burst") then
+    
+    end if; 
 
     wait for 50 ns;
     test_runner_cleanup(runner);
