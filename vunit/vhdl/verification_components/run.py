@@ -48,8 +48,13 @@ def gen_avalon_tests(obj, *args):
 
 tb_avalon_slave = lib.test_bench("tb_avalon_slave")
 
-for test in tb_avalon_slave.get_tests():
-    gen_avalon_tests(test, [32], [1, 2, 64], [1.0, 0.3], [0.0, 0.4])
+# TEMP sthenc 
+#for test in tb_avalon_slave.get_tests():
+#    gen_avalon_tests(test, [32], [1, 2, 64], [1.0, 0.3], [0.0, 0.4])
+
+tb_avalon_slave.add_config(name="sthenc_1",
+                generics=dict(encoded_tb_cfg="empty"))
+
 
 tb_wishbone_slave = lib.test_bench("tb_wishbone_slave")
 

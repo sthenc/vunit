@@ -33,11 +33,11 @@ architecture a of tb_avalon_slave is
 
   impure function decode(encoded_tb_cfg : string) return tb_cfg_t is
   begin
-    return (data_width => positive'value(get(encoded_tb_cfg, "data_width")),
-            address_width => 32,
-            num_cycles => positive'value(get(encoded_tb_cfg, "num_cycles")),
-            readdatavalid_prob => real'value(get(encoded_tb_cfg, "readdatavalid_prob")),
-            waitrequest_prob => real'value(get(encoded_tb_cfg, "waitrequest_prob")));
+    return (data_width => positive'value(get(encoded_tb_cfg, "data_width", "32")),
+            address_width => positive'value(get(encoded_tb_cfg, "address_width", "32")),
+            num_cycles => positive'value(get(encoded_tb_cfg, "num_cycles", "64")),
+            readdatavalid_prob => real'value(get(encoded_tb_cfg, "readdatavalid_prob", "0.5")),
+            waitrequest_prob => real'value(get(encoded_tb_cfg, "waitrequest_prob", "0.5")));
   end function decode;
 
   constant tb_cfg : tb_cfg_t := decode(encoded_tb_cfg);
